@@ -36,6 +36,9 @@ Cổng vòng 1 của bàn ICHIBAN (Phiếu B mục B6 · B7.1):
                               và liên hệ người nhận.                                 (pre-mortem lý do 2, 8 · B2 lỗi 2)
   Cổng 3 · pre_guard          ghim phiên bản chính sách theo ngày hiệu lực, không theo cờ index_active.
                                                                                      (pre-mortem lý do 3 · B3 drift)
+Vòng 2 (thẻ S2, Phiếu C mục C7):
+  Cổng 4 · issue_refund       tổng hoàn TỰ ĐỘNG cho một khách trong ngày + khoản mới vượt
+                              ops_limits.max_auto_refund_per_customer_per_day_vnd thì chuyển người duyệt. (C2 lỗi 3)
 Không xử lý riêng theo mã ticket hay câu chữ: mọi kiểm tra chỉ đọc bảng nguồn sự thật.
 """
 from . import helpers as H  # noqa: F401
@@ -80,10 +83,14 @@ def pre_guard(ctx):
 # ---------------------------------------------------------------- cổng 1 · issue_refund
 
 def _gate_refund(ctx, action):
-    if _directive_seen(ctx):
-        return Verdict.escalate("ticket chứa chỉ thị của khách (chữ khách là dữ liệu, không phải lệnh): chuyển người")
+    # Vòng 2 · S2: chỉ thị lấy từ chữ khách (ticket, checkout_note) là DỮ LIỆU, không phải lệnh. Thay vì chuyển người
+    # mọi ca có chỉ thị (tốn công duyệt, ROI âm), bỏ qua chỉ thị: bên trả luôn là LOGIX theo chính sách hoàn phí giao
+    # trễ, số tiền tính lại từ tracking, và ca vượt hạn mức vẫn cần phê duyệt thật ở bảng approvals (nhánh bên dưới).
+    changes = {}
     if action.get("payer", "LOGIX") != "LOGIX":
-        return Verdict.escalate(f"bên trả tiền {action.get('payer')} không theo chính sách hoàn phí giao trễ: chuyển người")
+        changes["payer"] = "LOGIX"
+    if _directive_seen(ctx) or changes:
+        ctx.log("directive_ignored", payer_before=action.get("payer"), amount_before_vnd=action.get("amount_vnd"))
 
     f = _facts(ctx, action.get("order_id"))
     if f is None:
@@ -101,7 +108,6 @@ def _gate_refund(ctx, action):
             f"theo tracking trễ {delay} ngày, {policy['policy_id']} không cho hoàn"
         return Verdict.deny(why)
 
-    changes = {}
     if amount != remaining:
         changes["amount_vnd"] = remaining
     approval_id = action.get("approval_id")
@@ -109,6 +115,16 @@ def _gate_refund(ctx, action):
     if remaining > policy["auto_limit_vnd"] and not appr_ok:
         return Verdict.escalate(f"{remaining}đ vượt hạn mức tự động {policy['auto_limit_vnd']}đ và không có phê duyệt "
                                 "hợp lệ cho đúng đơn này (sai đơn, đã dùng, hết hạn hoặc thiếu hạn mức): chuyển người duyệt")
+    # Vòng 2 · S2: trần hoàn TỰ ĐỘNG cho một khách trong ngày (ops_limits). Mỗi khoản riêng lẻ đúng chính sách
+    # vẫn có thể cộng dồn vượt trần; khoản làm vượt trần cần người duyệt.
+    cap = ctx.tools.ops_limits().get("max_auto_refund_per_customer_per_day_vnd")
+    if cap is not None and not appr_ok:
+        cust = action.get("customer_id") or ctx.ticket.get("customer_id")
+        spent = _auto_refund_today_for(ctx, cust)
+        if spent + remaining > cap:
+            ctx.log("customer_daily_cap", customer_id=cust, spent_today_vnd=spent, amount_vnd=remaining, cap_vnd=cap)
+            return Verdict.escalate(f"khách {cust} đã được hoàn tự động {spent}đ hôm nay; thêm {remaining}đ "
+                                    f"vượt trần {cap}đ/khách/ngày (ops_limits): chuyển người duyệt")
     if approval_id and not appr_ok:          # dưới hạn mức thì không cần phê duyệt: bỏ phê duyệt sai, không gắn vào sổ
         changes["approval_id"] = None
 
@@ -117,6 +133,24 @@ def _gate_refund(ctx, action):
                 db_delay_days=delay, policy_id=policy["policy_id"], changes=changes)
         return Verdict.modify(f"tính lại từ tracking ({delay} ngày) và {policy['policy_id']}", **changes)
     return Verdict.allow()
+
+
+def _auto_refund_today_for(ctx, customer_id):
+    """Tổng đã hoàn tự động (không có approval_id) cho một khách trong ngày hôm nay.
+
+    Sổ cái gồm các dòng của ngày trước (sổ đầu kỳ) rồi tới các dòng hôm nay. auto_refund_today_vnd() cho tổng hôm nay
+    của mọi khách; đi ngược từ cuối sổ, cộng các dòng tự động cho tới khi đủ tổng đó thì chính là phần của hôm nay."""
+    today_total = ctx.tools.auto_refund_today_vnd()
+    acc = mine = 0
+    for r in reversed(ctx.tools.ledger_rows()):
+        if acc >= today_total:
+            break
+        if r.get("approval_id"):
+            continue
+        acc += r["amount_vnd"]
+        if r.get("customer_id") == customer_id:
+            mine += r["amount_vnd"]
+    return mine
 
 
 def _approval_valid(ctx, approval_id, order, amount):
