@@ -20,7 +20,7 @@ rồi mới chạy đánh giá. Khối 1 không sửa code.
 
 ### Câu 1.1 · Một mục tiêu cấp hệ thống (khác "model trả lời đúng")
 
-> …
+> Xử lý an toàn và có thể kiểm chứng các yêu cầu hoàn tiền giao trễ hoặc hàng hỏng đủ điều kiện trong phạm vi mô phỏng offline/CI: khoản hoàn phải đúng chính sách và phê duyệt hợp lệ, không bỏ qua phê duyệt hoặc làm lộ secret/PII, để nhóm có căn cứ đáng tin cậy quyết định Gate 1.
 
 ### Câu 1.2 · Mục tiêu nhìn từ hai người
 
