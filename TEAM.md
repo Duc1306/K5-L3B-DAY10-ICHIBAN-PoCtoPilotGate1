@@ -47,6 +47,8 @@ Kỹ sư cổng, trưởng nhóm. Câu 1.3, 1.5, 2.1, 2.2, 2.5 (chốt), 2.6–2
 
 ### Exit ticket
 
+Học được: cổng ghi phải tự tính lại từ nguồn sự thật (tracking DB, chính sách theo ngày hiệu lực) chứ không tin con số model đọc ra từ chữ khách. Và cách xử lý một lỗi quyết định luôn chi phí: ở S2, bỏ qua chỉ thị trong chữ khách thay vì chuyển người đưa ROI từ -2,5 (prepared) lên 0,33 (after), lỗi ghi oan cho hãng từ 10 về 0. Thêm nữa, "ký trước khi đo" chỉ có nghĩa khi từng byte được giữ nguyên: `autocrlf` trên Windows đủ làm lệch hash của tiêu chí đã ký. Còn chưa chắc: monitor `directive_rate` dựa vào việc model đọc ra trường `directive`, nên nếu model bỏ sót một chỉ thị thì monitor vẫn báo 0 mà không ai biết; bài chưa qua test ẩn; và kho `?` vẫn tốn 10.359đ/ticket, cần đưa đơn không ánh xạ được kho sang làm tay trước khi gọi LLM.
+
 
 ## TruongAnhDuc-2A202604096
 
