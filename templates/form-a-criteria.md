@@ -71,9 +71,9 @@ nhau chia cho số lần chạy có sự kiện `proposal`; lần chạy không 
 
 ### Câu 1.5 · Chọn MỘT kết luận và giải thích một câu
 
-Số minh hoạ trong đề (không phải số của bàn). Khoanh: **(a) · (b) · (c) · (d)**
+Số minh hoạ trong đề (không phải số của bàn). Khoanh: **(b)**
 
-Giải thích một câu: …
+Giải thích một câu: Giá trị 1,0 của Y nằm ngay trong khoảng tin cậy 95% [0,94; 1,0] của X, nên chênh 1/50 lần chạy có thể chỉ do nhiễu và chưa đủ căn cứ nói Y tốt hơn X. Đáp án (a) sai vì khoảng tin cậy chứa 1,0; (c) sai vì "chưa thấy khác" không có nghĩa là "chắc chắn như nhau"; (d) sai vì X đạt hay không là do ngưỡng đã ký, không do số seed.
 
 ---
 
