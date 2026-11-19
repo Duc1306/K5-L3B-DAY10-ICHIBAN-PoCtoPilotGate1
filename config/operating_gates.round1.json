@@ -1,0 +1,31 @@
+{
+  "_huong_dan": "Cổng kinh doanh, vận hành, pháp lý mà trợ lý PHẢI tuân theo. Bàn điền ở vòng 1, chốt bằng python3 -m lab10.checkpoint, rồi được sửa tiếp ở vòng 2. null = chưa đặt cổng này. Giải thích từng dòng: docs/guide.md, mục Cổng trong config (#ban-do).",
+  "business": {
+    "daily_refund_cap_vnd": 1000000,
+    "cost_budget_per_ticket_vnd": 1500,
+    "pilot_scope": {"mode": "warehouse", "warehouses": ["HN", "DN"], "percent": 100},
+    "roi_min": 0.1
+  },
+  "operations": {
+    "pic": "NV-TUNG",
+    "approver_id": "NV-HANH",
+    "reviewers_on_shift": 1,
+    "review_capacity_per_hour": 6,
+    "max_queue_wait_minutes": 60,
+    "stop_conditions": [
+      "Khi có >= 1 khoản hoàn sai hoặc >= 1 lỗi ghi oan cho hãng được xác nhận thì NV-TUNG tắt issue_refund/file_carrier_fault trong config/switches.json, chuyển mọi ticket sang người trong <= 15 phút",
+      "Khi có >= 1 payload gửi hãng chứa dữ liệu cá nhân (SĐT, tên, địa chỉ, lời khách) thì tắt notify_carrier ngay, báo pháp chế trong ngày",
+      "Khi một hãng bị trợ lý ghi >= 3 lỗi trong 24 giờ thì tắt file_carrier_fault và notify_carrier, NV-HANH duyệt tay từng lỗi",
+      "Khi có ca chờ người duyệt > 60 phút hoặc >= 1 ca bị ùn thì gọi thêm 1 người trực; sau 30 phút vẫn ùn thì thu hẹp pilot_scope về 1 kho",
+      "Khi tổng hoàn tự động trong ngày chạm 80% daily_refund_cap_vnd thì báo kênh; chạm 100% thì mọi khoản còn lại chuyển người duyệt",
+      "Khi chi phí mỗi ticket > 9.000đ (ngưỡng đã ký, làm tay 10.000đ) hoặc ROI < 0,1 trong 2 ngày liên tiếp thì thu hẹp phạm vi; 5 ngày liên tiếp thì Dừng pilot"
+    ],
+    "alert_channel": "Kênh Slack #logix-refund-pilot (báo VÀNG); ĐỎ thì gọi điện trực tiếp NV-TUNG, dự phòng NV-HANH",
+    "decision_note": true,
+    "review_sampling_pct": 10
+  },
+  "legal": {
+    "pii_fields_blocked_to_third_party": ["recipient_contact", "customer_note"],
+    "carrier_fault_requires_recorded_cause": true
+  }
+}

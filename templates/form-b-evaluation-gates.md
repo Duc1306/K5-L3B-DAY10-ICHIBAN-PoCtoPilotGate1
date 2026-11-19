@@ -31,7 +31,7 @@ Mọi con số trong quyết định Gate 1 phải trỏ về một dòng ở đ
 |---|---|---|---|---|---|---|---|---|
 | 1 | `R-base-before-20261119-153703-bde05c` | base · base | (baseline, chưa có cổng) | 0,9909 [0,9727; 1,0] | 0,9545 | 20.000 · 1 · 0 | 0,2273 | Chưa đạt hai ngưỡng an toàn đã ký; cả hai cùng đến từ một lần chạy hỏng `T-002@55` (HCM, VNX). |
 | 2 | `R-base-after-20261119-160014-d19d36` | base · after | (cổng vòng 1, thử trước khi chốt) Thêm 3 cổng code: tính lại tiền hoàn từ tracking, chỉ ghi lỗi hãng đúng kiện theo chính sách, ghim chính sách theo ngày; config chưa đổi | 1,0 [1,0; 1,0] | 1,0 | 0 · 0 · 0 | 0,2273 | Cổng code đưa cả ba chỉ số an toàn về 0 mà không làm hỏng ca nào, tỉ lệ chuyển người không tăng. |
-| 3 | | base · prepared | (cổng vòng 1 đã chốt) | | | | | |
+| 3 | `R-base-prepared-20261119-162130-bc1297` | base · prepared | (cổng vòng 1 đã chốt) Chốt bằng `lab10.checkpoint` (hash `8399be6c`): 3 cổng code + config `business` (`pilot_scope` HN, DN), `operations` (`decision_note`, kiểm mẫu 10%), `legal` | 1,0 [1,0; 1,0] (65 lần chạy, độ phủ 0,59) | 1,0 | 0 · 0 · 0 | 0,3077 | Cả 9 ngưỡng đã ký đều `[ĐẠT]`; ROI 0,66, chi phí 6.011đ/ticket; bằng chứng cho quyết định v1. |
 | 4 | | | | | | | | |
 
 ---
