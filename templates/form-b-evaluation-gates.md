@@ -120,24 +120,24 @@ Gợi ý: mở `data/world.json` phần `policies`, `orders[].parcels`, `ops_lim
 
 | Mục | Điền cho trợ lý hoàn tiền |
 |---|---|
-| Người dùng | |
-| Việc người dùng cần làm xong | |
-| Đầu ra của hệ thống (kể cả các lệnh ghi) | |
-| Dữ liệu trợ lý đọc lúc chạy (bảng nào trong `data/world.json`) | |
-| Trường then chốt quyết định tiền và lỗi hãng | |
-| Với mỗi trường then chốt: **nguồn sự thật** hay **bản sao** (ai cập nhật, khi nào)? | |
-| Định dạng cần để ý (ngày, trường được phép trống, đơn nhiều kiện) | |
-| Thế giới thật làm dữ liệu lệch ở đâu (theo mùa, đổi chính sách, giờ cao điểm, người nhập tay)? | |
-| Câu người ngoài sẽ hỏi về nguồn dữ liệu ("sao hệ thống biết đơn trễ mấy ngày?") | |
+| Người dùng | Khách gửi ticket yêu cầu hoàn tiền; người dùng nội bộ là chị Hạnh (duyệt ca ngoại lệ), chị Oanh (đối soát với hãng/shop) và anh Tùng (giám sát, giữ công tắc dừng). |
+| Việc người dùng cần làm xong | Xác định khách có đủ điều kiện theo chính sách hiện hành không, tính đúng số tiền, ghi hoàn/ghi lỗi hãng đúng thẩm quyền; nếu dữ liệu thiếu hoặc mâu thuẫn thì chuyển người xử lý. |
+| Đầu ra của hệ thống (kể cả các lệnh ghi) | Trạng thái và câu trả lời cho khách; yêu cầu duyệt hoặc chuyển hàng chờ; ghi `issue_refund` vào ledger; `file_carrier_fault` và `notify_carrier`; `send_reply`. Các lệnh ghi phải truy vết được về ticket, đơn, kiện và policy đã dùng. |
+| Dữ liệu trợ lý đọc lúc chạy (bảng nào trong `data/world.json`) | `customers`, `orders`/`parcels`, `policies`, `approvals`, `ledger_seed`, `carriers`, `ops_limits`, `ops_facts`; ticket đầu vào ở `data/tickets.jsonl`. |
+| Trường then chốt quyết định tiền và lỗi hãng | `orders.shipping_fee_vnd`, `goods_value_vnd`; `parcels.promised_date`, `delivered_date`, `delay_cause`, `carrier_id`, `parcel_id`; policy `effective_from/to`, `index_active`, `late.min_days_fee/min_days_bonus`, `fault_causes`, `auto_limit_vnd`; approval `ticket_id/order_id/customer_id/max_vnd/expires_at/status`; các khoản đã ghi trong ledger. |
+| Với mỗi trường then chốt: **nguồn sự thật** hay **bản sao** (ai cập nhật, khi nào)? | Ticket text là nguồn cho điều khách khai, không phải sự thật về tracking. Trong lab, `orders`/`parcels` là bản ghi chuẩn về đơn và tracking; ngoài đời được cập nhật bởi hệ thống đơn hàng và scan của kho/hãng, có thể bị trễ hoặc nhập bù. Policy chuẩn là bản đã được chủ chính sách phê duyệt; `world.json` và cờ `index_active` là snapshot/index triển khai, cần chủ policy đổi đúng ngày hiệu lực. Approval và ledger là bản ghi chuẩn của dịch vụ duyệt/sổ cái; bản cache có thể cũ nếu approval hết hạn, đã dùng hoặc ledger chưa đồng bộ. `ops_limits`/`ops_facts` là snapshot mock do Ops/Finance thống nhất, PIC phải cập nhật khi trần hoặc nhân sự đổi. |
+| Định dạng cần để ý (ngày, trường được phép trống, đơn nhiều kiện) | Ngày ISO `YYYY-MM-DD`; `delivered_date` có thể trống thì tính tới `as_of`; `delay_cause` có thể `null` và không được tự suy thành lỗi hãng; một đơn có nhiều kiện nên phải dùng đúng `parcel_id` của ticket, nếu thiếu thì helper chọn kiện trễ nhất; tiền là số nguyên VND; approval có hạn dùng/trạng thái và phải khớp đúng ticket/đơn/khách. |
+| Thế giới thật làm dữ liệu lệch ở đâu (theo mùa, đổi chính sách, giờ cao điểm, người nhập tay)? | Scan giao nhận có thể tải muộn hoặc được sửa tay; nhiều kiện của một đơn có tiến độ/nguyên nhân khác nhau; chính sách có ngày hiệu lực mới nhưng cờ index/cache chưa chuyển; giờ cao điểm làm hàng chờ và công suất người duyệt đổi; Ops/Finance có thể đổi ngân sách, SLA hoặc chi phí. |
+| Câu người ngoài sẽ hỏi về nguồn dữ liệu ("sao hệ thống biết đơn trễ mấy ngày?") | Hệ thống tính từ `delivered_date - promised_date` trong tracking của đúng kiện theo `as_of`, không lấy số ngày khách tự khai làm căn cứ; nếu chưa giao, nguyên nhân trống hoặc tracking mâu thuẫn thì chuyển người xác minh. |
 
 **Tóm lại (điền vào chỗ trống):**
-Trợ lý dùng `__________`, `__________`, `__________` để giúp `__________` làm được `__________`.
-Trường mà nếu sai thì tiền hoặc lỗi hãng sai theo: `__________`, `__________`.
-Chúng tôi biết thế giới thật sẽ làm dữ liệu lệch ở: `__________`. Dấu hiệu nhìn thấy sớm nhất: `__________`.
+Trợ lý dùng `tickets.jsonl`, `world.orders/parcels` và `world.policies/approvals/ledger` để giúp khách và đội vận hành xử lý yêu cầu hoàn đúng chính sách, đúng số tiền và đúng thẩm quyền.
+Trường mà nếu sai thì tiền hoặc lỗi hãng sai theo: `parcels.promised_date/delivered_date/delay_cause` và `policies.effective date/late thresholds/fault_causes`.
+Chúng tôi biết thế giới thật sẽ làm dữ liệu lệch ở: tracking scan cập nhật muộn và policy/index đổi theo ngày hiệu lực. Dấu hiệu nhìn thấy sớm nhất: policy được chọn không khớp policy có hiệu lực tại `as_of`, hoặc số hoàn/lỗi hãng trong trace lệch khỏi nhãn theo policy hiện hành.
 
-**Ví dụ drift trong 3 tháng tới** (lấy từ dòng "thế giới thật làm dữ liệu lệch"): cái gì đổi `____` · đổi ngày nào `____` ·
-trường nào cho thấy `____` · con số nào của Bản tiêu chí bị ảnh hưởng `____`.
-Đây là đầu vào đổi hay quan hệ vào–ra đổi? Chỉ số nào sẽ phát hiện? `__________`
+**Ví dụ drift trong 3 tháng tới** (lấy từ dòng "thế giới thật làm dữ liệu lệch"): cái gì đổi `REFUND-v3` chuyển sang `REFUND-v4`: ngưỡng hoàn phí trễ đổi từ 3 xuống 2 ngày; `FORCE_MAJEURE` bị bỏ khỏi `fault_causes`; hạn mức tự động giảm từ 200.000đ xuống 100.000đ · đổi ngày nào `2026-12-01` ·
+trường nào cho thấy `policies[].effective_from/effective_to`, `index_active`, `late.min_days_fee`, `fault_causes`, `auto_limit_vnd` · con số nào của Bản tiêu chí bị ảnh hưởng `pass_rate`/`pass_k` (nếu vẫn dùng ngưỡng v3 thì có thể từ chối nhầm ticket 2 ngày trễ) và `wrongful_carrier_faults` (nếu vẫn ghi lỗi cho FORCE_MAJEURE).
+Đây là đầu vào đổi hay quan hệ vào–ra đổi? **Đầu vào đổi**: policy có phiên bản và giá trị mới; không phải cùng một policy nhưng model tự đổi cách trả lời. Chỉ số nào sẽ phát hiện? `wrongful_carrier_faults` và `pass_rate`/`pass_k` trên bộ nhãn cập nhật theo v4; log thêm policy_id được chọn và cảnh báo khi policy_id không nằm trong khoảng hiệu lực theo `as_of`.
 
 **Ví dụ một dòng (đừng chép):** trường then chốt `parcels[].delivered_date` · bản ghi do máy quét ở điểm phát tạo ra, là nguồn
 sự thật về ngày giao · lệch khi điểm phát quét sót hoặc nhập bù bằng tay.
