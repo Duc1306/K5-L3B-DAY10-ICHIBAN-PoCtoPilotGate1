@@ -47,7 +47,6 @@ Kỹ sư cổng, trưởng nhóm. Câu 1.3, 1.5, 2.1, 2.2, 2.5 (chốt), 2.6–2
 
 ### Exit ticket
 
-*(Bản nháp, Đức đọc lại và sửa theo ý mình.)* Học được: cổng tốt nhất đọc nguồn sự thật (tracking, sổ cái, bảng phê duyệt) chứ không đọc chữ khách, và "chặn hết rồi chuyển người" có giá. Ở S2, chuyển người mọi ca có chỉ thị làm ROI còn 0,03; bỏ qua chỉ thị và tính lại theo chính sách mới vừa an toàn vừa có lời. Còn chưa chắc: cổng trần theo `customer_id` có đứng được trên bộ test ẩn không, khi một người dùng nhiều tài khoản; và cách xử lý chỉ thị (bỏ qua thay vì chuyển người) có đúng điều team chấm mong đợi với ticket tấn công không.
 
 ## TruongAnhDuc-2A202604096
 
@@ -59,7 +58,7 @@ Vận hành và pháp lý. Câu 1.2, 1.4, 2.4, 2.10, 3.1 (phần riêng theo th�
 
 - **Vòng 1**: mục tiêu nhìn từ chị Oanh và chị Hạnh (1.2); telemetry production (1.4); HAZOP vòng 1 trên `notify_carrier` kèm dòng ngoài kỹ thuật, và checklist 9 nhóm việc có PIC (2.4); cổng con người, vận hành, pháp lý trong config (2.10): `pic` NV-TUNG, `approver_id` NV-HANH, 1 người trực, 6 ca/giờ, chờ tối đa 60 phút, `decision_note`, kiểm mẫu 10%, các điều kiện dừng, kênh báo tin, `legal.pii_fields_blocked_to_third_party = ["recipient_contact", "customer_note"]`, `carrier_fault_requires_recorded_cause = true`; runbook phần 1–3 và giờ cao điểm.
 - **Vòng 2, thẻ S2**: phần riêng theo thẻ (mức kiểm soát của con người), HAZOP của thẻ, specification và giả định môi trường, fault tree trước và sau khi sửa, sửa `operations.stop_conditions` và `alert_channel` (thêm NV-OANH), risk register, cập nhật checklist, runbook phần 4–5.
-- **Dùng AI**: *(Anh Đức tự ghi: có dùng AI cho phần nào không.)*
+- **Dùng AI**: dùng Claude để hỗ trợ đọc dữ liệu (`data/world.json`, trace của thẻ), gợi ý và soát câu chữ cho HAZOP, checklist, runbook và các mục Phiếu C của phần mình. Các con số trong `operations`, `legal` (người trực, công suất duyệt, thời gian chờ, điều kiện dừng, trường dữ liệu bị chặn) là do mình chốt và đối chiếu với report.
 
 ### Bằng chứng
 
@@ -69,7 +68,7 @@ Vận hành và pháp lý. Câu 1.2, 1.4, 2.4, 2.10, 3.1 (phần riêng theo th�
 
 ### Exit ticket
 
-*(Anh Đức tự viết: một điều học được, một điều còn chưa chắc.)*
+Học được: cổng không chỉ là code. Những thứ như người đứng tên duyệt (NV-HANH), ghi chú giải thích cho mỗi quyết định và kiểm mẫu 10% chính là điều kiện để CSKH thôi kiểm tay toàn bộ, và thêm người trực không phải cách sửa ROI. Ở S2, hàng chờ 0 ca ùn nên thêm một người chỉ cộng 30.000đ/ca vào chi phí. Còn chưa chắc: các thời hạn trong runbook (tắt `issue_refund` trong ≤ 15 phút, gọi thêm người khi chờ quá 60 phút) mới đúng trên giấy, chưa diễn tập với người thật; và việc ghép khách theo số điện thoại/địa chỉ để bắt một người nhiều tài khoản cần pháp chế duyệt cách xử lý dữ liệu cá nhân trước.
 
 ## DangKhacHoangMinh-2A202604082
 
@@ -81,7 +80,7 @@ Sản phẩm và kinh doanh. Câu 1.1, 1.6, 2.3, 2.9, 3.2, 3.5 (`business`), quy
 
 - **Vòng 1**: mục tiêu cấp hệ thống (1.1); Bản tiêu chí (1.6): 5 ngưỡng bắt buộc, `escalation_rate_max` 0,4, `business_ops` (chi phí ≤ 9.000đ/ticket, ROI ≥ 0,1, 0 ca ùn), `stop_condition` và 4 dòng `decision_rule`; ký lúc 15:32, hash `ffe7d707`. Bản đồ dữ liệu và ví dụ drift `REFUND-v3` → `REFUND-v4` ngày 2026-12-01 (2.3). Cổng kinh doanh (2.9): trần hoàn tự động trong ngày, ngân sách LLM 1.500đ/ticket, `pilot_scope` HN + DN, `roi_min` 0,1. Quyết định v1: **Cải tiến thêm**, hạn xem lại 2026-11-26.
 - **Vòng 2, thẻ S2**: specification cho `issue_refund` (3.2); hạ `daily_refund_cap_vnd` xuống 300.000đ làm chốt chặn tổng; quyết định v2: **Cải tiến thêm** (giữ v1), kèm ba dòng bắt buộc chép sang `submission/submission.json`.
-- **Dùng AI**: các commit của Minh có dòng `Co-authored-by: Copilot`. *(Minh tự ghi rõ đã dùng Copilot cho phần nào.)*
+- **Dùng AI**: dùng GitHub Copilot để hỗ trợ soạn và soát câu chữ các mục Phiếu A, B, C của phần mình (mục tiêu, câu tiêu chí, bản đồ dữ liệu, quyết định v1 và v2); các commit có dòng `Co-authored-by: Copilot`. Các ngưỡng trong Bản tiêu chí, con số trong mục `business` và hai quyết định là do mình chốt, dựa trên `data/world.json` (`ops_limits`, `ops_facts`) và report.
 
 ### Bằng chứng
 
@@ -91,4 +90,4 @@ Sản phẩm và kinh doanh. Câu 1.1, 1.6, 2.3, 2.9, 3.2, 3.5 (`business`), quy
 
 ### Exit ticket
 
-*(Minh tự viết: một điều học được, một điều còn chưa chắc.)*
+Học được: phải viết và ký ngưỡng trước khi xem số, và quyết định phải khớp đúng dòng `decision_rule` đã ký chứ không chỉ "nhìn số thấy ổn". Thu hẹp phạm vi cũng có thể che lỗi: ở S2, hai ticket HCM (`S2-02`, `S2-03`) trông như đã sửa chỉ vì nằm ngoài `pilot_scope`. Còn chưa chắc: với phân khúc kho "?" tốn 10.359đ/ticket, "Cải tiến thêm" hay "Thu hẹp" mới là dòng `decision_rule` khớp hơn; và trần tổng 300.000đ/ngày có quá chặt khi pilot mở ra 2 depot, giờ đã có cổng trần theo từng khách.
