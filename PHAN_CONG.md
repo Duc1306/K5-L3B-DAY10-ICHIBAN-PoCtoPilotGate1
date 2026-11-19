@@ -4,11 +4,13 @@ Repo và giá trị `team`: **`K5-L3B-DAY10-ICHIBAN-PoCtoPilotGate1`** (ghi đú
 
 | Vai | Người | MSSV | Trưởng nhóm |
 |---|---|---|:-:|
-| **A · Kỹ sư cổng** | | | |
-| **B · Sản phẩm và kinh doanh** | | | |
-| **C · Vận hành và pháp lý** | | | |
+| **A · Kỹ sư cổng** | Trịnh Minh Đức | 2A202604078 | ✓ |
+| **B · Sản phẩm và kinh doanh** | Đặng Khắc Hoàng Minh | 2A202604082 | |
+| **C · Vận hành và pháp lý** | Trương Anh Đức | 2A202604096 | |
 
 Trưởng nhóm chạy các lệnh một lần của cả bàn: ký tiêu chí, chốt vòng 1, nhận thẻ, push bài.
+
+**Bản chung từ Lab 9:** PRD v1.1 và eval card của Trịnh Minh Đức, chép vào [lab9/](lab9/README.md). Chỉ để đọc khi làm Phiếu A; không chép ngưỡng.
 
 ## 1. Mỗi vai giữ file nào
 
