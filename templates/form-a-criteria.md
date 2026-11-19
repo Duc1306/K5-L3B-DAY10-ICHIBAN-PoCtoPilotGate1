@@ -24,8 +24,8 @@ rồi mới chạy đánh giá. Khối 1 không sửa code.
 
 ### Câu 1.2 · Mục tiêu nhìn từ hai người
 
-- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): …
-- Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): …
+- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): Khi chốt sổ hằng tuần, mọi khoản hoàn trợ lý ghi vào sổ cái phải khớp được với chứng từ của hãng và shop mà không cần sửa lại. Cụ thể, mỗi dòng ghi đủ `ticket_id`, `order_id`, `payer`, `approval_id` hợp lệ đúng claim và `basis` theo chính sách đang hiệu lực. Cũng không được có khoản hoàn trùng hoặc vượt số đã duyệt cho cùng đơn, và không được ghi lỗi oan cho hãng (mỗi lỗi bị phạt 80.000–150.000đ, đủ số lỗi thì hãng bị treo). Lý do: chị không đọc trace, nên một dòng sai sẽ thành tranh chấp tiền với đối tác (PRD §2: cap theo số đã duyệt, số đã trả và lịch sử cùng đơn; §6: chưa có dữ liệu thật).
+- Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): Mọi ca chuyển sang chị phải được nhận xử lý trong SLA 60 phút, và chị quyết được trong một lượt. Muốn vậy, trợ lý chỉ chuyển những ca thực sự cần người: vượt 300.000đ/khách/ngày, từ lỗi thứ 3 của cùng một hãng trong ngày, hoặc ngoài phạm vi. Lượng ca chuyển phải nằm trong sức một người duyệt (6 ca/giờ). Mỗi ca kèm ghi chú giải thích (số tiền, điều khoản, lý do chuyển) để chị không phải làm lại từ đầu. Ngoài ra, không có khoản hoàn nào dùng phê duyệt mang tên chị mà không hợp lệ. Lý do: chị là người đứng tên duyệt (`approver_id` = NV-HANH), và đây là các điều kiện để CSKH thôi kiểm lại từng quyết định, chuyển sang kiểm mẫu 10% (`staff_behavior.trust_conditions`).
 
 ---
 
