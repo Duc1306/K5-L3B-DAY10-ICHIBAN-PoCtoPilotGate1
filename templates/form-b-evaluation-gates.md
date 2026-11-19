@@ -324,10 +324,10 @@ Mỗi con số kèm một câu lý do, lấy từ `data/world.json` → `ops_lim
 
 | Khoá | Giá trị bàn đặt | Lý do (một câu, có số) |
 |---|---|---|
-| `business.daily_refund_cap_vnd` | | |
-| `business.cost_budget_per_ticket_vnd` | | |
-| `business.pilot_scope` (all / warehouse / percent) | | |
-| `business.roi_min` | | |
+| `business.daily_refund_cap_vnd` | `1000000` đ/ngày | Đặt trần 1.000.000đ, bằng một nửa ngân sách hoàn tự động 2.000.000đ/ngày của Finance (`ops_limits`), để giới hạn mức phơi nhiễm ban đầu và giữ 1.000.000đ headroom dưới trần Finance. |
+| `business.cost_budget_per_ticket_vnd` | `1500` đ/ticket | Đặt trần 1.500đ/ticket đúng bằng giới hạn chi phí LLM tối đa mỗi ticket Ops đã thống nhất (`ops_limits.max_llm_cost_per_ticket_vnd`), để ticket dài hoặc phải retry vượt trần sẽ chuyển người thay vì tiếp tục gọi máy. |
+| `business.pilot_scope` (all / warehouse / percent) | `{"mode":"warehouse","warehouses":["HN","DN"],"percent":100}` | Chọn đúng 2 kho HN và DN cho pilot giới hạn; tạm để HCM ngoài phạm vi vì base đã ghi nhận sự cố an toàn tại HCM (`T-002@55`), còn các kho ngoài phạm vi tiếp tục xử lý thủ công thay vì thu hẹp phạm vi về 0. |
+| `business.roi_min` | `0.10` (10%) | Đặt ROI tối thiểu 0,10 để yêu cầu lợi ích ròng ít nhất 10% tổng chi phí, dựa trên chi phí làm tay 10.000đ/ticket trong `ops_facts` và thống nhất với ngưỡng đã ký ở Phiếu A. |
 
 ### B7.5 · Câu 2.10 · Cổng con người, vận hành, pháp lý + Runbook phần 1–3
 
