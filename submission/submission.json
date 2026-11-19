@@ -1,12 +1,12 @@
 {
   "team": "K5-L3B-DAY10-ICHIBAN-PoCtoPilotGate1",
   "members": ["TrinhMinhDuc-2A202604078", "TruongAnhDuc-2A202604096", "DangKhacHoangMinh-2A202604082"],
-  "incident": "",
-  "decision_v1": "",
-  "decision_v2": "",
+  "incident": "S2",
+  "decision_v1": "Cải tiến thêm",
+  "decision_v2": "Cải tiến thêm",
   "three_lines": {
-    "environment_assumption": "",
-    "reduce_or_prevent": "",
-    "measure_in_pilot": ""
+    "environment_assumption": "Mỗi `customer_id` chỉ thuộc về một người thật và một người chỉ dùng một `customer_id`; ngoài đời một người có thể dùng nhiều tài khoản hoặc nhiều người dùng chung một tài khoản.",
+    "reduce_or_prevent": "Chỉ GIẢM khả năng; cổng chặn tự động theo `customer_id` nhưng nhiều tài khoản của cùng người có thể vượt trần, còn trần tổng ngày chỉ giới hạn tổng tiền tự động chứ không xác minh danh tính người nhận.",
+    "measure_in_pilot": "Đo tỷ lệ cụm số điện thoại/địa chỉ nhận có từ hai `customer_id` nhận hoàn trong 7 ngày và tỷ lệ ca chuyển duyệt do trần khách được NV-HANH chấp thuận; chỉ ghép theo số điện thoại/địa chỉ sau khi pháp chế phê duyệt cách xử lý PII."
   }
 }

@@ -7,3 +7,7 @@
 # (kể cả bản chép trong submission/ do lệnh 7 tạo ra).
 acceptance_criteria.json -text
 operating_gates.round1.json -text
+
+# Bài nộp do lệnh 7 (check_submission --collect) sinh ra và băm vào submission/manifest.json:
+# giữ nguyên từng byte để manifest khớp trên mọi máy clone về.
+submission/** -text
