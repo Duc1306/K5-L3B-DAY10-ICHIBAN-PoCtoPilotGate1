@@ -1,6 +1,6 @@
 # Phiếu A · Tiêu chí và cách đo · Khối 1 (phút 15–65)
 
-**Bàn:** ______ · **Người cầm bút chính:** vai Sản phẩm và kinh doanh (câu 1.3: Kỹ sư cổng; câu 1.2, 1.4: Vận hành và pháp lý)
+**Bàn:** K5-L3B-DAY10-ICHIBAN-PoCtoPilotGate1 · **Người cầm bút chính:** vai Sản phẩm và kinh doanh (câu 1.3: Kỹ sư cổng; câu 1.2, 1.4: Vận hành và pháp lý)
 
 Điền phiếu này **trước khi chạy trợ lý lần nào**. Viết xong thì chép ngưỡng sang `config/acceptance_criteria.json`, ký ở phút 60–65,
 rồi mới chạy đánh giá. Khối 1 không sửa code.
@@ -48,12 +48,12 @@ trợ lý có đang gây thiệt hại cho bên ngoài LogiX không; không có 
 
 | | Offline, cho MỘT bước (câu 1.3) | Telemetry production (câu 1.4) |
 |---|---|---|
-| **Bước / hành vi được đo** | | |
-| **Thước đo** (một câu, có đơn vị) | | |
-| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | | |
-| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | | |
+| **Bước / hành vi được đo** | Bước **ghi lỗi hãng**: lệnh ghi `file_carrier_fault` (hãng nào, kiện nào). Chọn bước này vì mỗi dòng ghi sai phạt tiền một bên ngoài LogiX (GHSH 150.000đ/lỗi, DNB 80.000đ/lỗi; đủ 3 lỗi trong 7 ngày thì hãng bị treo, theo `data/world.json` → `carriers`), và vì chị Oanh phải đối soát từng dòng với hãng. | |
+| **Thước đo** (một câu, có đơn vị) | **Tỉ lệ ghi lỗi hãng oan**: phần trăm số dòng lỗi hãng trợ lý ghi ra mà sai hãng, sai kiện, hoặc không nên ghi (%). Đi kèm một số phụ là **số lỗi hãng bị bỏ sót** (dòng), để không đạt được tỉ lệ oan thấp chỉ bằng cách không bao giờ ghi lỗi. | |
+| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | Đầu ra: sự kiện `{"type": "tool", "tool": "file_carrier_fault", "carrier_id", "parcel_id"}` trong `runs/<mã lần chạy>/traces/<ticket>@<seed>.json`. Nhãn: `label.faults` trong `data/tickets.jsonl` (danh sách cặp `[carrier_id, parcel_id]` đúng). Nhãn do người ra đề gán sẵn, dựa trên tracking DB (`orders[].parcels[].delay_cause`) và `fault_causes` của chính sách đang hiệu lực. Cỡ mẫu: bộ nền 22 ticket × 5 seed = 110 lần chạy. Ở pilot thật, nhãn do kế toán đối soát (chị Oanh) gán khi đối chiếu biên bản tranh chấp của hãng hằng tuần. | |
+| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | Với mỗi lần chạy, so tập cặp `(carrier_id, parcel_id)` đã ghi với `label.faults`. Mỗi cặp ghi ra mà không có trong nhãn là một dòng oan; mỗi cặp có trong nhãn mà không được ghi là một dòng bỏ sót. **Tỉ lệ oan = Σ dòng oan / Σ dòng đã ghi** trên cả 110 lần chạy. Ghi lặp cùng một cặp trong một lần chạy thì tính từng dòng, vì hãng bị phạt theo từng dòng. Lần chạy không ghi dòng nào (từ chối, chuyển người, cổng chặn) không vào mẫu số, nhưng vẫn được xét bỏ sót. Nếu tổng số dòng đã ghi bằng 0, báo "không áp dụng" thay vì 0%, và đọc số bỏ sót. Báo thêm tách theo từng hãng (`carrier_id`). | |
 | **Khung thời gian / ngưỡng báo động** | (không áp dụng) | |
-| **Điểm mù** (thước đo này KHÔNG thấy gì) | | |
+| **Điểm mù** (thước đo này KHÔNG thấy gì) | (1) Nhãn suy từ tracking DB, nên khi chính `delay_cause` trong DB ghi sai hoặc để trống thì thước đo không thấy. (2) Đo từng lần chạy riêng lẻ, nên không thấy tác hại cộng dồn: nhiều dòng đúng của cùng một hãng trong 7 ngày vẫn làm hãng bị treo. (3) Không thấy những gì gửi kèm cho hãng ở `notify_carrier` (dữ liệu cá nhân, ghi chú của khách). (4) Ticket và dữ liệu là mock, nên tỉ lệ này chưa nói gì về tần suất thật ở 2 depot. | |
 
 **Ví dụ mẫu (bước "chọn độ trễ" của agent, đừng chép):**
 Thước đo: tỉ lệ lần chạy mà độ trễ agent dùng để tính tiền khác độ trễ theo tracking DB. Dữ liệu: sự kiện `proposal.delay_days_used`
