@@ -260,9 +260,13 @@ Kiểm bằng gì (hàm trong `guards.py`, dòng report nào): `write_gate` / `_
 
 ### Câu 3.3 · Một giả định về môi trường mà người thiết kế đã ngầm tin, nhưng nhiều khả năng sai ngoài thực tế
 
-Giả định (thứ nằm NGOÀI phần mềm): …
+Giả định (thứ nằm NGOÀI phần mềm): **Mỗi `customer_id` là đúng một người thật, và mỗi người chỉ dùng một `customer_id`.** Nghĩa là tiền đi vào túi một người trong ngày có thể đếm bằng cách cộng sổ cái theo `customer_id`. Cả spec câu 3.2 (trần 300.000đ/khách/ngày) lẫn trần `ops_limits.max_auto_refund_per_customer_per_day_vnd` mà Ops/Finance thống nhất đều dựa trên giả định này. Trong data mock, giả định đúng tuyệt đối: 16 khách, không trùng số điện thoại; 7 đơn của `C-03` (`O-1003`, `O-1019`, `O-2240`…`O-2244`) cùng một người nhận "Lê Thị Cúc", cùng SĐT `0925330403`, cùng địa chỉ "8 Nguyễn Văn Linh".
 
-Vì sao có thể sai: …
+Vì sao có thể sai: Ngoài đời, mã khách là **tài khoản**, không phải **con người**, và lệch theo hai chiều.
+- **Một người, nhiều tài khoản.** Đăng ký tài khoản mới chỉ cần một số điện thoại hoặc email. Người đã thấy 5 ticket liên tiếp trong ngày thì được hoàn (`S2-40`…`S2-44`) có thể chia đợt mua ra 2–3 tài khoản, hoặc nhờ người nhà gửi ticket. Mỗi tài khoản đứng dưới 300.000đ, nên cổng không bao giờ sáng đèn, trong khi tiền vẫn về một địa chỉ nhận. Chỗ trùng thật nằm ở `recipient.phone` / `recipient.street`, và agent không xét các trường này. Kênh cũng không định danh: loạt `C-03` đến xen kẽ qua `app` và `email` (`S2-41`, `S2-43` qua email), mà email thì ai cũng gửi được nhân danh người khác.
+- **Một tài khoản, nhiều người.** Shop nhỏ, văn phòng hoặc gia đình đặt hàng chung một tài khoản cho nhiều người nhận. Nhiều khoản hoàn hợp lệ trong một ngày là chuyện bình thường, nhưng sẽ bị chuyển người. Tỉ lệ chuyển người và hàng chờ của chị Hạnh tăng, chi phí mỗi ticket tiến về mức làm tay.
+
+Hệ quả: cổng trần theo khách chỉ **giảm khả năng** vượt trần, không **ngăn** được, vì nó đếm đúng thứ mà người lạm dụng tự chọn được. Cần đo lại trong pilot thật: (1) tỉ lệ cụm `recipient.phone` hoặc địa chỉ nhận mà có ≥ 2 `customer_id` nhận hoàn trong 7 ngày; (2) trong các ca bị chuyển người vì trần khách, bao nhiêu ca chị Hạnh duyệt cho qua (chặn oan) so với bao nhiêu ca từ chối. Nếu (1) đáng kể thì trần phải đếm theo người nhận hoặc địa chỉ, không theo tài khoản. Đây là việc cần Ops/Finance và pháp chế đồng ý, vì gộp tài khoản theo SĐT là xử lý dữ liệu cá nhân.
 
 ---
 
