@@ -1,0 +1,9 @@
+# Mọi file chữ dùng xuống dòng LF trên mọi máy, để hash của file bị khoá (lab10/MANIFEST.json) khớp cả trên Windows.
+* text=auto eol=lf
+
+# Hai file đã được băm (hash) trên Windows ở dạng CRLF lúc ký tiêu chí và lúc chốt vòng 1.
+# Giữ nguyên từng byte, không chuyển đổi xuống dòng, để hash trong
+# config/acceptance_criteria.lock và config/round1.lock khớp trên mọi máy clone về
+# (kể cả bản chép trong submission/ do lệnh 7 tạo ra).
+acceptance_criteria.json -text
+operating_gates.round1.json -text
